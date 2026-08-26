@@ -1,28 +1,57 @@
 // @ts-check
 import { test, expect } from '@playwright/test';
+import AuthorizationPage from '../models/AuthorizationPage.js'
 
 test('открытие приложения', async ({ page }) => {
-  await page.goto('/#/login');
+  const autoPageTaskManager = new AuthorizationPage(page)
+  await autoPageTaskManager.goto();
 
-  const buttonSing = page.getByRole('button',{name:'Sign in'})
-
-  // Expect a title "to contain" a substring.
-  await expect(buttonSing).toBeVisible();
+  await expect(autoPageTaskManager.buttonSign).toBeVisible();
 });
 
-// test('отображение входа', async ({ page }) => {
-//   await page.goto('/#/login');
 
-//   // Expect a title "to contain" a substring.
-//   await expect(page).toHaveTitle('Get started');
-// });
 
-// test('get started link', async ({ page }) => {
-//   await page.goto('https://playwright.dev/');
+test('авторизация', async ({ page }) => {
+  const autoPageTaskManager = new AuthorizationPage(page)
+  await autoPageTaskManager.goto();
+  await autoPageTaskManager.login('Username','Password')
 
-//   // Click the get started link.
-//   await page.getByRole('link', { name: 'Get started' }).click();
+  await autoPageTaskManager.buttonSign.click()
 
-//   // Expects page to have a heading with the name of Installation.
-//   await expect(page.getByRole('heading', { name: 'Installation' })).toBeVisible();
-// });
+  const head = page.getByRole('heading')
+
+  await expect(head).toContainText('Welcome to the administration');
+});
+
+
+
+test('выход', async ({ page }) => {
+  const autoPageTaskManager = new AuthorizationPage(page)
+  await autoPageTaskManager.goto();
+  await autoPageTaskManager.login('Username','Password')
+
+  await autoPageTaskManager.buttonSign.click();
+  
+  const profile = page.getByLabel('Profile');
+
+  await profile.click();
+
+  const logout = page.getByRole('menuitem', { name: 'Logout' });
+
+  await logout.click();
+
+  await expect(autoPageTaskManager.buttonSign).toBeVisible();
+});
+
+
+
+test('предупреждение при авторизации', async ({ page }) => {
+  const autoPageTaskManager = new AuthorizationPage(page)
+  await autoPageTaskManager.goto();
+  
+  await autoPageTaskManager.buttonSign.click()
+
+  const alert = page.getByRole('alert');
+
+  await expect(alert).toContainText('The form is not valid. Please');
+});
