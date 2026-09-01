@@ -272,4 +272,38 @@ test('удаление всех статусов', async ({ page }) => {
   await expect(statusPageTaskManager.buttonCreate).toBeVisible();
   
 })
+
+
+test('удаление всех лейблов с нескольких страниц', async ({ page }) => {
+  const statusPageTaskManager = new StatusesPage(page)
+
+  const noLabelsText = page.getByText('No Task statuses yet.')
+  const checkboxSelectAll = page.getByRole('checkbox', { name: 'Select all' })
+
+  await statusPageTaskManager.menuStatuses.click()
+
+  while (true) {
+    if (await noLabelsText.isVisible()) {
+      break
+    }
+
+    await checkboxSelectAll.check()
+    await expect(page.locator('[data-test="bulk-actions-toolbar"]')).toBeVisible()
+    await statusPageTaskManager.buttonDel.click()
+
+    await expect.poll(async () => {
+      const noLabels = await noLabelsText.isVisible().catch(() => false)
+      const hasCheckbox = await checkboxSelectAll.isVisible().catch(() => false)
+      return noLabels || hasCheckbox
+    }, { timeout: 10000, intervals: [500, 1000] })
+
+    if (!await noLabelsText.isVisible()) {
+      await statusPageTaskManager.menuStatuses.click()
+    }
+  }
+
+  await expect(page.locator('[data-test="bulk-actions-toolbar"]')).not.toBeVisible()
+  await expect(noLabelsText).toBeVisible()
+  await expect(statusPageTaskManager.buttonCreate).toBeVisible()
+})
 })
