@@ -369,4 +369,38 @@ test('удаление всех пользователей', async ({ page }) =>
   await expect(userPageTaskManager.buttonCreate).toBeVisible();
   
 })
+
+
+test('удаление всех пользователей с нескольких страниц', async ({ page }) => {
+  const userPageTaskManager = new UsersPage(page)
+
+  const noLabelsText = page.getByText('No Users yet.')
+  const checkboxSelectAll = page.getByRole('checkbox', { name: 'Select all' })
+
+  await userPageTaskManager.menuUsers.click()
+
+  while (true) {
+    if (await noLabelsText.isVisible()) {
+      break
+    }
+
+    await checkboxSelectAll.check()
+    await expect(page.locator('[data-test="bulk-actions-toolbar"]')).toBeVisible()
+    await userPageTaskManager.buttonDel.click()
+
+    await expect.poll(async () => {
+      const noLabels = await noLabelsText.isVisible().catch(() => false)
+      const hasCheckbox = await checkboxSelectAll.isVisible().catch(() => false)
+      return noLabels || hasCheckbox
+    }, { timeout: 10000, intervals: [500, 1000] })
+
+    if (!await noLabelsText.isVisible()) {
+      await userPageTaskManager.menuUsers.click()
+    }
+  }
+
+  await expect(page.locator('[data-test="bulk-actions-toolbar"]')).not.toBeVisible()
+  await expect(noLabelsText).toBeVisible()
+  await expect(userPageTaskManager.buttonCreate).toBeVisible()
+})
 })
