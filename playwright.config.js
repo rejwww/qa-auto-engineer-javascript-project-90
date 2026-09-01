@@ -77,5 +77,11 @@ export default defineConfig({
   //   url: 'http://localhost:3000',
   //   reuseExistingServer: !process.env.CI,
   // },
+  webServer: {
+    command: 'npm run dev',       // команда, которая запускает твоё приложение
+    url: 'http://localhost:5173', // URL, который Playwright будет ждать
+    reuseExistingServer: !process.env.CI, // локально использует уже запущенный сервер
+    timeout: 60_000,              // сколько ждать старта (мс)
+  },
 });
 
