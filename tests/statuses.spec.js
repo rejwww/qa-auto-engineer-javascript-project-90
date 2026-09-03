@@ -5,14 +5,14 @@ import StatusesPage from '../models/StatusesPage.js'
 
 test.beforeEach(async ({ page}) => {
     const autoPageTaskManager = new AuthorizationPage(page)
-      await autoPageTaskManager.goto();
-      await autoPageTaskManager.login('Username','Password')
+    await autoPageTaskManager.goto();
+    await autoPageTaskManager.login('Username','Password')
     
-      await autoPageTaskManager.buttonSign.click()
+    await autoPageTaskManager.buttonSign.click()
     
-      const head = page.getByRole('heading')
+    const head = page.getByRole('heading')
     
-      await expect(head).toContainText('Welcome to the administration');
+    await expect(head).toContainText('Welcome to the administration');
 })
 
 
@@ -31,7 +31,7 @@ test('отображение формы создания статуса', async 
 })
 
 test('cоздание статуса', async ({ page }) => {
-  const statusPageTaskManager = new StatusesPage(page)
+    const statusPageTaskManager = new StatusesPage(page)
 
     await statusPageTaskManager.menuStatuses.click()
     await statusPageTaskManager.buttonCreate.click()
@@ -101,20 +101,20 @@ test('отображение страницы редактирования ст�
 
     await statusPageTaskManager.menuStatuses.click()
 
-  const tr = page.getByRole('row')
+    const tr = page.getByRole('row')
                  .filter({ hasText: statusPageTaskManager.status.slug })
 
-  await tr.click()
+    await tr.click()
 
-  await expect(statusPageTaskManager.inputName).toBeVisible();
-  await expect(statusPageTaskManager.inputSlug).toBeVisible();
-  await expect(statusPageTaskManager.buttonSave).toBeVisible();
-  await expect(statusPageTaskManager.buttonDel).toBeVisible();
-  await expect(statusPageTaskManager.buttonShow).toBeVisible();
+    await expect(statusPageTaskManager.inputName).toBeVisible();
+    await expect(statusPageTaskManager.inputSlug).toBeVisible();
+    await expect(statusPageTaskManager.buttonSave).toBeVisible();
+    await expect(statusPageTaskManager.buttonDel).toBeVisible();
+    await expect(statusPageTaskManager.buttonShow).toBeVisible();
 
-  await expect(statusPageTaskManager.inputName).toHaveValue(statusPageTaskManager.status.name);
-  await expect(statusPageTaskManager.inputSlug).toHaveValue(statusPageTaskManager.status.slug);
- 
+    await expect(statusPageTaskManager.inputName).toHaveValue(statusPageTaskManager.status.name);
+    await expect(statusPageTaskManager.inputSlug).toHaveValue(statusPageTaskManager.status.slug);
+  
 })
 
 test('редактирование статуса', async ({ page }) => {
@@ -200,21 +200,21 @@ test('удаление одного статуса через список', asy
 
     await statusPageTaskManager.menuStatuses.click()
 
-  const checkboxUser = page.getByRole('row')
+    const checkboxUser = page.getByRole('row')
                  .filter({ hasText: statusPageTaskManager.status.slug})
                  .getByRole('checkbox')
 
-  await checkboxUser.check()
+    await checkboxUser.check()
 
-  await expect(page.locator('[data-test="bulk-actions-toolbar"]')).toBeVisible();
+    await expect(page.locator('[data-test="bulk-actions-toolbar"]')).toBeVisible();
 
-  await statusPageTaskManager.buttonDel.click()
+    await statusPageTaskManager.buttonDel.click()
 
-  await expect(page.locator('[data-test="bulk-actions-toolbar"]')).not.toBeVisible();
+    await expect(page.locator('[data-test="bulk-actions-toolbar"]')).not.toBeVisible();
 
-  await expect(statusPageTaskManager.alert).toContainText('Element deleted');
+    await expect(statusPageTaskManager.alert).toContainText('Element deleted');
 
-   await expect(page.getByRole('cell', { name: statusPageTaskManager.status.name , exact: true })).not.toBeVisible();
+    await expect(page.getByRole('cell', { name: statusPageTaskManager.status.name , exact: true })).not.toBeVisible();
     await expect(page.getByRole('cell', { name: statusPageTaskManager.status.slug, exact: true })).not.toBeVisible();
 
 })
@@ -230,28 +230,27 @@ test('удаление нескольких статусов', async ({ page }) 
     await statusPageTaskManager.menuStatuses.click()
 
 
-   for(let i = 0; i < statusPageTaskManager.statusesArr.length - 1; i++){
-    const status = statusPageTaskManager.statusesArr[i]
-    const checkboxUser = page.getByRole('row')
-                   .filter({ hasText: status.slug })
-                   .getByRole('checkbox')
-    await checkboxUser.check()
-   }
+    for(let i = 0; i < statusPageTaskManager.statusesArr.length - 1; i++){
+      const status = statusPageTaskManager.statusesArr[i]
+      const checkboxUser = page.getByRole('row')
+                    .filter({ hasText: status.slug })
+                    .getByRole('checkbox')
+      await checkboxUser.check()
+    }
 
-  await expect(page.locator('[data-test="bulk-actions-toolbar"]')).toBeVisible();
+    await expect(page.locator('[data-test="bulk-actions-toolbar"]')).toBeVisible();
 
-  await statusPageTaskManager.buttonDel.click()
+    await statusPageTaskManager.buttonDel.click()
 
-  await expect(page.locator('[data-test="bulk-actions-toolbar"]')).not.toBeVisible();
-  
-for(let i = 0; i < statusPageTaskManager.statusesArr.length - 1; i++){
-    const status = statusPageTaskManager.statusesArr[i]
+    await expect(page.locator('[data-test="bulk-actions-toolbar"]')).not.toBeVisible();
     
-  await expect(page.getByRole('cell', { name: status.name , exact: true })).not.toBeVisible();
-  await expect(page.getByRole('cell', { name: status.slug, exact: true })).not.toBeVisible();
-  
-   }
-  
+    for(let i = 0; i < statusPageTaskManager.statusesArr.length - 1; i++){
+        const status = statusPageTaskManager.statusesArr[i]
+        
+      await expect(page.getByRole('cell', { name: status.name , exact: true })).not.toBeVisible();
+      await expect(page.getByRole('cell', { name: status.slug, exact: true })).not.toBeVisible();
+      
+      }
 })
 
 test('удаление всех статусов', async ({ page }) => {
@@ -259,33 +258,33 @@ test('удаление всех статусов', async ({ page }) => {
 
     await statusPageTaskManager.menuStatuses.click()
 
-  const checkboxUsers = page.getByRole('checkbox', { name: 'Select all' })
+    const checkboxUsers = page.getByRole('checkbox', { name: 'Select all' })
 
-  await checkboxUsers.check()
+    await checkboxUsers.check()
 
-  await expect(page.locator('[data-test="bulk-actions-toolbar"]')).toBeVisible();
+    await expect(page.locator('[data-test="bulk-actions-toolbar"]')).toBeVisible();
 
-  await statusPageTaskManager.buttonDel.click()
+    await statusPageTaskManager.buttonDel.click()
 
-  await expect(page.locator('[data-test="bulk-actions-toolbar"]')).not.toBeVisible();
-  await expect(page.getByText('No Task statuses yet.')).toBeVisible();
-  await expect(statusPageTaskManager.buttonCreate).toBeVisible();
-  
+    await expect(page.locator('[data-test="bulk-actions-toolbar"]')).not.toBeVisible();
+    await expect(page.getByText('No Task statuses yet.')).toBeVisible();
+    await expect(statusPageTaskManager.buttonCreate).toBeVisible();
+    
 })
 
 
 test('удаление всех лейблов с нескольких страниц', async ({ page }) => {
-  const statusPageTaskManager = new StatusesPage(page)
+    const statusPageTaskManager = new StatusesPage(page)
 
-  const noLabelsText = page.getByText('No Task statuses yet.')
-  const checkboxSelectAll = page.getByRole('checkbox', { name: 'Select all' })
+    const noLabelsText = page.getByText('No Task statuses yet.')
+    const checkboxSelectAll = page.getByRole('checkbox', { name: 'Select all' })
 
-  await statusPageTaskManager.menuStatuses.click()
+    await statusPageTaskManager.menuStatuses.click()
 
-  while (true) {
-    if (await noLabelsText.isVisible()) {
-      break
-    }
+    while (true) {
+      if (await noLabelsText.isVisible()) {
+        break
+      }
 
     await checkboxSelectAll.check()
     await expect(page.locator('[data-test="bulk-actions-toolbar"]')).toBeVisible()
@@ -302,8 +301,8 @@ test('удаление всех лейблов с нескольких стра�
     }
   }
 
-  await expect(page.locator('[data-test="bulk-actions-toolbar"]')).not.toBeVisible()
-  await expect(noLabelsText).toBeVisible()
-  await expect(statusPageTaskManager.buttonCreate).toBeVisible()
+    await expect(page.locator('[data-test="bulk-actions-toolbar"]')).not.toBeVisible()
+    await expect(noLabelsText).toBeVisible()
+    await expect(statusPageTaskManager.buttonCreate).toBeVisible()
 })
 })

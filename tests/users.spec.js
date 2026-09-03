@@ -4,15 +4,15 @@ import AuthorizationPage from '../models/AuthorizationPage.js'
 import UsersPage from '../models/UsersPage.js'
 
 test.beforeEach(async ({ page}) => {
-    const autoPageTaskManager = new AuthorizationPage(page)
-      await autoPageTaskManager.goto();
-      await autoPageTaskManager.login('Username','Password')
+  const autoPageTaskManager = new AuthorizationPage(page)
+  await autoPageTaskManager.goto();
+  await autoPageTaskManager.login('Username','Password')
     
-      await autoPageTaskManager.buttonSign.click()
+  await autoPageTaskManager.buttonSign.click()
     
-      const head = page.getByRole('heading')
+  const head = page.getByRole('heading')
     
-      await expect(head).toContainText('Welcome to the administration');
+  await expect(head).toContainText('Welcome to the administration');
 })
 
 test.describe('создание новых пользователей', ()=>{
@@ -77,9 +77,9 @@ test('отображение списка пользователей', async ({ 
     const tr = page.getByRole('row')
                    .filter({ hasText: user.email })
                    
-    await expect(tr.getByRole('cell', {name: user.id , exact: true})).toBeVisible()
-    await expect(tr.getByRole('cell', {name: user.firstName , exact: true})).toBeVisible()
-    await expect(tr.getByRole('cell', {name: user.lastName , exact: true})).toBeVisible()
+  await expect(tr.getByRole('cell', {name: user.id , exact: true})).toBeVisible()
+  await expect(tr.getByRole('cell', {name: user.firstName , exact: true})).toBeVisible()
+  await expect(tr.getByRole('cell', {name: user.lastName , exact: true})).toBeVisible()
   }
 
 })
@@ -380,21 +380,21 @@ test('удаление всех пользователей с нескольки
   await userPageTaskManager.menuUsers.click()
 
   while (true) {
-    if (await noLabelsText.isVisible()) {
-      break
-    }
+      if (await noLabelsText.isVisible()) {
+        break
+      }
 
-    await checkboxSelectAll.check()
-    await expect(page.locator('[data-test="bulk-actions-toolbar"]')).toBeVisible()
-    await userPageTaskManager.buttonDel.click()
+  await checkboxSelectAll.check()
+  await expect(page.locator('[data-test="bulk-actions-toolbar"]')).toBeVisible()
+  await userPageTaskManager.buttonDel.click()
 
-    await expect.poll(async () => {
+  await expect.poll(async () => {
       const noLabels = await noLabelsText.isVisible().catch(() => false)
       const hasCheckbox = await checkboxSelectAll.isVisible().catch(() => false)
       return noLabels || hasCheckbox
     }, { timeout: 10000, intervals: [500, 1000] })
 
-    if (!await noLabelsText.isVisible()) {
+  if (!await noLabelsText.isVisible()) {
       await userPageTaskManager.menuUsers.click()
     }
   }
