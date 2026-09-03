@@ -50,4 +50,11 @@ async createLabel(name ){
     await this.inputName.fill(name)
   }
 
+async completeСreationLabel(name){
+    await this.menuLabels.click()
+    await this.buttonCreate.click()
+    await this.createLabel(name)
+    await this.buttonSave.click()
+}
+
 }
