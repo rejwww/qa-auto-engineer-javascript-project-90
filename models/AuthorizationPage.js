@@ -12,8 +12,8 @@ export default class AuthorizationPage{
     await this.page.goto('/#/login')
   }
 
-  async login(username,password){
-    await this.inputUsername.fill(username)
-    await this.inputPassword.fill(password)
-  }
+    async login(username,password){
+      await this.inputUsername.fill(username)
+      await this.inputPassword.fill(password)
+    }
 }

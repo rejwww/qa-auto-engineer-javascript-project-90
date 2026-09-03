@@ -139,7 +139,7 @@ export default class LabelsPage{
 
      }
 
-     async createTasks(assignee,title,content,status,label){
+    async createTasks(assignee,title,content,status,label){
         await this.selectAssignee.click()
         await this.page.getByRole('option', { name: assignee }).click();
         await this.selectStatus.click()
@@ -151,5 +151,12 @@ export default class LabelsPage{
         await this.inputContent.fill(content)
        
   }
+
+    async completeСreationTask(assignee,title,content,status,label){
+        await this.menuTasks.click()
+        await this.buttonCreate.click()
+        await this.createTasks(assignee,title,content,status,label)
+        await this.buttonSave.click()
+    }
 
 }

@@ -58,4 +58,11 @@ async createStatus(name , slug){
     await this.inputSlug.fill(slug)
   }
 
+async completeСreationStatus(name , slug){
+    await this.menuStatuses.click()
+    await this.buttonCreate.click()
+    await this.createStatus(name , slug)
+    await this.buttonSave.click()
+}
+
 }

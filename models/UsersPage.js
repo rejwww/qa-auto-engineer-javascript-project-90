@@ -87,9 +87,16 @@ export default class UsersPage{
  
 }
 
-   async createUser(email , firstName , lastName){
+  async createUser(email , firstName , lastName){
     await this.inputEmail.fill(email)
     await this.inputFirstName.fill(firstName)
     await this.inputLastName.fill(lastName)
   }
+
+  async completeСreationUser(email , firstName , lastName){
+    await this.menuUsers.click()
+    await this.buttonCreate.click()
+    await this.createUser(email , firstName , lastName)
+    await this.buttonSave.click()
+}
 }
