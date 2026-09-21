@@ -26,12 +26,9 @@ test('авторизация', async ({ page }) => {
 test('выход', async ({ page }) => {
   const autoPageTaskManager = new AuthorizationPage(page)
   await autoPageTaskManager.goto();
-  await autoPageTaskManager.login('Username','Password')
-  await autoPageTaskManager.buttonSign.click();
-  const profile = page.getByLabel('Profile');
-  await profile.click();
-  const logout = page.getByRole('menuitem', { name: 'Logout' });
-  await logout.click();
+  await autoPageTaskManager.signIn('Username','Password')
+  await autoPageTaskManager.profile.click();
+  await autoPageTaskManager.logout.click();
 
   await expect(autoPageTaskManager.buttonSign).toBeVisible();
 });

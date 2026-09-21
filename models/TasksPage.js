@@ -1,4 +1,4 @@
-export default class LabelsPage{
+export default class TasksPage{
 
      constructor(page) {
     this.page = page
@@ -28,90 +28,14 @@ export default class LabelsPage{
         label:'bug'
     }
 
-
-    this.tasksArr = [
-        {
-        id: '11',
+    this.taskUpdate ={
         assignee:'john@google.com',
-        title:'Task 11',
-        content:'Description of task 11',
+        title:'Other task',
+        content:'Other content',
         status:'Draft',
-        label: [
-            'bug',
-            'feature',
-            'enhancement'
-            ]
-        },
-         {
-        id: '5',
-        assignee:'john@google.com',
-        title:'Task 5',
-        content:'Description of task 5',
-        status:'Draft'
-        },
-        {
-        id: '2',
-        assignee:'john@google.com',
-        title:'Task 2',
-        content:'Description of task 2',
-        status:'To Review',
-        label: [
-            'bug',
-            'feature'
-            ]
-        },
-        {
-        id: '12',
-        assignee:'jack@yahoo.com',
-        title:'Task 12',
-        content:'Description of task 12',
-        status:'To Review',
-        label: [
-            'feature',
-            'enhancement',
-            'task'
-            ]
-        },
-        {
-        id: '1',
-        assignee:'john@google.com',
-        title:'Task 1',
-        content:'Description of task 1',
-        status:'To Be Fixed'
-        },
-        {
-        id: '13',
-        assignee:'jack@yahoo.com',
-        title:'Task 13',
-        content:'Description of task 13',
-        status:'To Be Fixed',
-        label: [
-            'enhancement',
-            'task',
-            'critical'
-            ]
-        },
-        {
-        id: '3',
-        assignee:'jack@yahoo.com',
-        title:'Task 3',
-        content:'Description of task 3',
-        status:'To Publish',
-        label: [
-            'bug'
-            ]
-        },
-         {
-        id: '4',
-        assignee:'jack@yahoo.com',
-        title:'Task 4',
-        content:'Description of task 4',
-        status:'Published',
-        label: [
-            'feature'
-            ]
-        }
-    ]
+        label:'bug'
+    }
+
 
     this.columnStatus = [
         {
@@ -157,6 +81,56 @@ export default class LabelsPage{
         await this.buttonCreate.click()
         await this.createTasks(assignee,title,content,status,label)
         await this.buttonSave.click()
+    }
+
+    async editTask(title, content, assignee){
+        await this.inputTitle.fill(title)
+        await this.inputContent.fill(content)
+        await this.selectAssignee.click()
+        await this.page.getByRole('option', { name:assignee}).click();
+        await this.selectStatus.click()
+        await this.page.getByRole('option', { name: 'To Review' }).click();
+        await this.selectLabel.click()
+        await this.page.getByRole('option', { name: 'task' }).click();
+        await this.page.getByRole('option', { name: 'bug' }).click();
+        await this.page.locator('.MuiBackdrop-root').click();
+        await this.buttonSave.click()
+    }
+
+    async moveTaskBetweenColumns(task, columnId){
+
+    const taskCard = this.page.locator(task).getByRole('button', { name: `${this.task.title} ${this.task.content}` })
+    const targetColumn = this.page.locator(columnId); 
+
+// drag-and-drop через mouse events
+    const cardBox = await taskCard.boundingBox();
+    const targetBox = await targetColumn.boundingBox();
+//Стартовые координаты карточки
+    const startX = cardBox.x + cardBox.width / 2;
+    const startY = cardBox.y + cardBox.height / 2;
+//Конечные координаты в колонке 
+    const endX = targetBox.x + targetBox.width / 2;
+    const endY = targetBox.y; 
+// мышь наведена на центр карточки
+    await this.page.mouse.move(startX, startY);
+    await this.page.mouse.down();
+// первый сдвиг
+    await this.page.mouse.move(startX + 5, startY + 5);
+//ожидание 
+    await this.page.waitForTimeout(200);
+// фиксируем шаг и сдвигаемся к конечной точке
+    const steps = 10;
+    for (let i = 1; i <= steps; i++) {
+    const x = startX + ((endX - startX) * i) / steps;
+    const y = startY + ((endY - startY) * i) / steps;
+    await this.page.mouse.move(x, y);
+    await this.page.waitForTimeout(50); //даёт браузеру время обработать события
+  }
+//ожидание
+    await this.page.waitForTimeout(300);
+// отпускаем мышь
+    await this.page.mouse.up();
+    
     }
 
 }

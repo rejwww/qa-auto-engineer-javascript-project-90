@@ -22,35 +22,6 @@ export default class StatusesPage{
         slug:'cancelled'
     }
 
-  this.statusesArr = [
-    {
-        id:'1',
-        name:'Draft',
-        slug:'draft'
-    },
-    {
-        id:'2',
-        name:'To Review',
-        slug:'to_review'
-    },
-    {
-        id:'3',
-        name:'To Be Fixed',
-        slug:'to_be_fixed'
-    },
-    {
-        id:'4',
-        name:'To Publish',
-        slug:'to_publish'
-    },
-     {
-        id:'5',
-        name:'Published',
-        slug:'published'
-    }
-  ]
-
-
 }
 
 async createStatus(name , slug){
@@ -63,6 +34,21 @@ async completeСreationStatus(name , slug){
     await this.buttonCreate.click()
     await this.createStatus(name , slug)
     await this.buttonSave.click()
+}
+
+async openRow(name){
+  await this.menuStatuses.click()
+    const tr = this.page.getByRole('row')
+                 .filter({ hasText: name })
+    await tr.click()
+
+}
+
+async selectRow(name){
+  const checkboxUser = this.page.getByRole('row')
+                 .filter({ hasText: name})
+                 .getByRole('checkbox')
+  await checkboxUser.click()
 }
 
 }
