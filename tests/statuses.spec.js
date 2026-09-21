@@ -1,21 +1,11 @@
-import { test, expect } from '@playwright/test';
-import AuthorizationPage from '../models/AuthorizationPage.js'
+import { test, expect }  from '../models/loggedPage.js'
 import StatusesPage from '../models/StatusesPage.js'
-
-
-test.beforeEach(async ({ page}) => {
-    const autoPageTaskManager = new AuthorizationPage(page)
-    await autoPageTaskManager.goto();
-    await autoPageTaskManager.login('Username','Password')   
-    await autoPageTaskManager.buttonSign.click()
-    const head = page.getByRole('heading')
-    await expect(head).toContainText('Welcome to the administration');
-})
+import {statusesArr} from '../__fixtures__/ststusesData.js'
 
 
 test.describe('создание новых статусов', ()=>{
-test('отображение формы создания статуса', async ({ page }) => {
-    const statusPageTaskManager = new StatusesPage(page)
+test('отображение формы создания статуса', async ({ loggedPage }) => {
+    const statusPageTaskManager = new StatusesPage(loggedPage)
     await statusPageTaskManager.menuStatuses.click()
     await statusPageTaskManager.buttonCreate.click()
 
@@ -25,8 +15,8 @@ test('отображение формы создания статуса', async 
 
 })
 
-test('cоздание статуса', async ({ page }) => {
-    const statusPageTaskManager = new StatusesPage(page)
+test('cоздание статуса', async ({ loggedPage }) => {
+    const statusPageTaskManager = new StatusesPage(loggedPage)
     await statusPageTaskManager.menuStatuses.click()
     await statusPageTaskManager.buttonCreate.click()
     await statusPageTaskManager.createStatus(statusPageTaskManager.status.name, statusPageTaskManager.status.slug)
@@ -36,31 +26,31 @@ test('cоздание статуса', async ({ page }) => {
   
     await statusPageTaskManager.menuStatuses.click()
 
-    await expect(page.getByRole('cell', { name: statusPageTaskManager.status.name , exact: true })).toBeVisible();
-    await expect(page.getByRole('cell', { name: statusPageTaskManager.status.slug, exact: true })).toBeVisible();
+    await expect(loggedPage.getByRole('cell', { name: statusPageTaskManager.status.name , exact: true })).toBeVisible();
+    await expect(loggedPage.getByRole('cell', { name: statusPageTaskManager.status.slug, exact: true })).toBeVisible();
 })
 })
 
 
 test.describe('просмотр списка статусов', ()=>{
-test('отображение таблицы статусов', async ({ page }) => {
-    const statusPageTaskManager = new StatusesPage(page)
+test('отображение таблицы статусов', async ({ loggedPage }) => {
+    const statusPageTaskManager = new StatusesPage(loggedPage)
     await statusPageTaskManager.menuStatuses.click()
 
     await expect(statusPageTaskManager.tableStatuses).toBeVisible()
-    await expect(page.getByRole('columnheader', { name: 'Select all' })).toBeVisible();
-    await expect(page.getByRole('columnheader', { name: 'Sort by id descending' })).toBeVisible();
-    await expect(page.getByRole('columnheader', { name: 'Sort by name ascending' })).toBeVisible();
-    await expect(page.getByRole('columnheader', { name: 'Sort by slug ascending' })).toBeVisible();
-    await expect(page.getByRole('columnheader', { name: 'Sort by created at ascending' })).toBeVisible();
+    await expect(loggedPage.getByRole('columnheader', { name: 'Select all' })).toBeVisible();
+    await expect(loggedPage.getByRole('columnheader', { name: 'Sort by id descending' })).toBeVisible();
+    await expect(loggedPage.getByRole('columnheader', { name: 'Sort by name ascending' })).toBeVisible();
+    await expect(loggedPage.getByRole('columnheader', { name: 'Sort by slug ascending' })).toBeVisible();
+    await expect(loggedPage.getByRole('columnheader', { name: 'Sort by created at ascending' })).toBeVisible();
 
 })
 
-test('отображение списка статусов', async ({ page }) => {
-    const statusPageTaskManager = new StatusesPage(page)
+test('отображение списка статусов', async ({ loggedPage }) => {
+    const statusPageTaskManager = new StatusesPage(loggedPage)
     await statusPageTaskManager.menuStatuses.click()
-    for(let status of statusPageTaskManager.statusesArr){
-        const tr = page.getByRole('row')
+    for(let status of statusesArr){
+        const tr = loggedPage.getByRole('row')
                    .filter({ hasText: status.slug })
                    
         await expect(tr.getByRole('cell', {name: status.id , exact: true})).toBeVisible()
@@ -71,13 +61,10 @@ test('отображение списка статусов', async ({ page }) =>
 
 
 test.describe('pедактирование информации о статусах', ()=>{
-test('отображение страницы редактирования статуса', async ({ page }) => {
-    const statusPageTaskManager = new StatusesPage(page)
+test('отображение страницы редактирования статуса', async ({ loggedPage }) => {
+    const statusPageTaskManager = new StatusesPage(loggedPage)
     await statusPageTaskManager.completeСreationStatus(statusPageTaskManager.status.name, statusPageTaskManager.status.slug)
-    await statusPageTaskManager.menuStatuses.click()
-    const tr = page.getByRole('row')
-                 .filter({ hasText: statusPageTaskManager.status.slug })
-    await tr.click()
+    await statusPageTaskManager.openRow(statusPageTaskManager.status.slug)
 
     await expect(statusPageTaskManager.inputName).toBeVisible();
     await expect(statusPageTaskManager.inputSlug).toBeVisible();
@@ -89,24 +76,21 @@ test('отображение страницы редактирования ст�
   
 })
 
-test('редактирование статуса', async ({ page }) => {
-    const statusPageTaskManager = new StatusesPage(page)
+test('редактирование статуса', async ({ loggedPage }) => {
+    const statusPageTaskManager = new StatusesPage(loggedPage)
     await statusPageTaskManager.completeСreationStatus(statusPageTaskManager.status.name, statusPageTaskManager.status.slug)
-    await statusPageTaskManager.menuStatuses.click()
-    const tr = page.getByRole('row')
-                 .filter({ hasText: statusPageTaskManager.status.slug })
-    await tr.click()
+    await statusPageTaskManager.openRow(statusPageTaskManager.status.slug)
     await statusPageTaskManager.inputName.fill('Done')
     await statusPageTaskManager.inputSlug.fill('done')
     await statusPageTaskManager.buttonSave.click()
     await expect(statusPageTaskManager.alert).toContainText('Element updated');
 
-    await expect(page.getByRole('cell', { name: 'Done' , exact: true })).toBeVisible();
-    await expect(page.getByRole('cell', { name: 'done', exact: true })).toBeVisible();
-    await expect(page.getByRole('cell', { name: statusPageTaskManager.status.name , exact: true })).not.toBeVisible();
-    await expect(page.getByRole('cell', { name: statusPageTaskManager.status.slug, exact: true })).not.toBeVisible();
+    await expect(loggedPage.getByRole('cell', { name: 'Done' , exact: true })).toBeVisible();
+    await expect(loggedPage.getByRole('cell', { name: 'done', exact: true })).toBeVisible();
+    await expect(loggedPage.getByRole('cell', { name: statusPageTaskManager.status.name , exact: true })).not.toBeVisible();
+    await expect(loggedPage.getByRole('cell', { name: statusPageTaskManager.status.slug, exact: true })).not.toBeVisible();
 
-    const trUpdate = page.getByRole('row')
+    const trUpdate = loggedPage.getByRole('row')
                  .filter({ hasText: 'done'})
     await trUpdate.click()
 
@@ -115,45 +99,39 @@ test('редактирование статуса', async ({ page }) => {
 
     await statusPageTaskManager.buttonShow.click()
 
-    await expect(page.getByText('NameDone')).toBeVisible();
-    await expect(page.locator('#main-content')).toContainText('Done');
+    await expect(loggedPage.getByText('NameDone')).toBeVisible();
+    await expect(loggedPage.locator('#main-content')).toContainText('Done');
 })
 })
 
 
 test.describe('удаление статусов', ()=>{
-test('удаление одного статуса через карточку', async ({ page }) => {
-    const statusPageTaskManager = new StatusesPage(page)
+test('удаление одного статуса через карточку', async ({ loggedPage }) => {
+    const statusPageTaskManager = new StatusesPage(loggedPage)
     await statusPageTaskManager.completeСreationStatus(statusPageTaskManager.status.name, statusPageTaskManager.status.slug)
-    await statusPageTaskManager.menuStatuses.click()
-    const tr = page.getByRole('row')
-                 .filter({ hasText: statusPageTaskManager.status.slug })
-    await tr.click()
+    await statusPageTaskManager.openRow(statusPageTaskManager.status.slug)
     await statusPageTaskManager.buttonDel.click()
 
     await expect(statusPageTaskManager.alert).toContainText('Element deleted');
-    await expect(page.getByRole('cell', { name: statusPageTaskManager.status.name , exact: true })).not.toBeVisible();
-    await expect(page.getByRole('cell', { name: statusPageTaskManager.status.slug, exact: true })).not.toBeVisible();
+    await expect(loggedPage.getByRole('cell', { name: statusPageTaskManager.status.name , exact: true })).not.toBeVisible();
+    await expect(loggedPage.getByRole('cell', { name: statusPageTaskManager.status.slug, exact: true })).not.toBeVisible();
 
 })
 
-test('удаление одного статуса через список', async ({ page }) => {
-    const statusPageTaskManager = new StatusesPage(page)
+test('удаление одного статуса через список', async ({ loggedPage }) => {
+    const statusPageTaskManager = new StatusesPage(loggedPage)
     await statusPageTaskManager.completeСreationStatus(statusPageTaskManager.status.name, statusPageTaskManager.status.slug)
     await statusPageTaskManager.menuStatuses.click()
-    const checkboxUser = page.getByRole('row')
-                 .filter({ hasText: statusPageTaskManager.status.slug})
-                 .getByRole('checkbox')
-    await checkboxUser.check()
+    await statusPageTaskManager.selectRow(statusPageTaskManager.status.slug)
 
-    await expect(page.locator('[data-test="bulk-actions-toolbar"]')).toBeVisible();
+    await expect(loggedPage.locator('[data-test="bulk-actions-toolbar"]')).toBeVisible();
 
     await statusPageTaskManager.buttonDel.click()
 
-    await expect(page.locator('[data-test="bulk-actions-toolbar"]')).not.toBeVisible();
+    await expect(loggedPage.locator('[data-test="bulk-actions-toolbar"]')).not.toBeVisible();
     await expect(statusPageTaskManager.alert).toContainText('Element deleted');
-    await expect(page.getByRole('cell', { name: statusPageTaskManager.status.name , exact: true })).not.toBeVisible();
-    await expect(page.getByRole('cell', { name: statusPageTaskManager.status.slug, exact: true })).not.toBeVisible();
+    await expect(loggedPage.getByRole('cell', { name: statusPageTaskManager.status.name , exact: true })).not.toBeVisible();
+    await expect(loggedPage.getByRole('cell', { name: statusPageTaskManager.status.slug, exact: true })).not.toBeVisible();
 
 })
 })
@@ -161,58 +139,55 @@ test('удаление одного статуса через список', asy
 
 
 test.describe('массовое удаление статусов', ()=>{
-test('удаление нескольких статусов', async ({ page }) => {
-    const statusPageTaskManager = new StatusesPage(page)
+test('удаление нескольких статусов', async ({ loggedPage }) => {
+    const statusPageTaskManager = new StatusesPage(loggedPage)
     await statusPageTaskManager.menuStatuses.click()
-    for(let i = 0; i < statusPageTaskManager.statusesArr.length - 1; i++){
-      const status = statusPageTaskManager.statusesArr[i]
-      const checkboxUser = page.getByRole('row')
-                    .filter({ hasText: status.slug })
-                    .getByRole('checkbox')
-      await checkboxUser.check()
+    for(let i = 0; i < statusesArr.length - 1; i++){
+      const status = statusesArr[i]
+     await statusPageTaskManager.selectRow(status.slug)
     }
 
-    await expect(page.locator('[data-test="bulk-actions-toolbar"]')).toBeVisible();
+    await expect(loggedPage.locator('[data-test="bulk-actions-toolbar"]')).toBeVisible();
 
     await statusPageTaskManager.buttonDel.click()
 
-    await expect(page.locator('[data-test="bulk-actions-toolbar"]')).not.toBeVisible();
+    await expect(loggedPage.locator('[data-test="bulk-actions-toolbar"]')).not.toBeVisible();
     
-    for(let i = 0; i < statusPageTaskManager.statusesArr.length - 1; i++){
-        const status = statusPageTaskManager.statusesArr[i]
+    for(let i = 0; i < statusesArr.length - 1; i++){
+        const status = statusesArr[i]
         
-    await expect(page.getByRole('cell', { name: status.name , exact: true })).not.toBeVisible();
-    await expect(page.getByRole('cell', { name: status.slug, exact: true })).not.toBeVisible(); 
+    await expect(loggedPage.getByRole('cell', { name: status.name , exact: true })).not.toBeVisible();
+    await expect(loggedPage.getByRole('cell', { name: status.slug, exact: true })).not.toBeVisible(); 
       }
 })
 
-test('удаление всех статусов', async ({ page }) => {
-    const statusPageTaskManager = new StatusesPage(page)
+test('удаление всех статусов', async ({ loggedPage }) => {
+    const statusPageTaskManager = new StatusesPage(loggedPage)
     await statusPageTaskManager.menuStatuses.click()
-    const checkboxUsers = page.getByRole('checkbox', { name: 'Select all' })
+    const checkboxUsers = loggedPage.getByRole('checkbox', { name: 'Select all' })
     await checkboxUsers.check()
 
-    await expect(page.locator('[data-test="bulk-actions-toolbar"]')).toBeVisible();
+    await expect(loggedPage.locator('[data-test="bulk-actions-toolbar"]')).toBeVisible();
 
     await statusPageTaskManager.buttonDel.click()
 
-    await expect(page.locator('[data-test="bulk-actions-toolbar"]')).not.toBeVisible();
-    await expect(page.getByText('No Task statuses yet.')).toBeVisible();
+    await expect(loggedPage.locator('[data-test="bulk-actions-toolbar"]')).not.toBeVisible();
+    await expect(loggedPage.getByText('No Task statuses yet.')).toBeVisible();
     await expect(statusPageTaskManager.buttonCreate).toBeVisible();
 })
 
 
-test('удаление всех лейблов с нескольких страниц', async ({ page }) => {
-    const statusPageTaskManager = new StatusesPage(page)
-    const noLabelsText = page.getByText('No Task statuses yet.')
-    const checkboxSelectAll = page.getByRole('checkbox', { name: 'Select all' })
+test('удаление всех лейблов с нескольких страниц', async ({ loggedPage }) => {
+    const statusPageTaskManager = new StatusesPage(loggedPage)
+    const noLabelsText = loggedPage.getByText('No Task statuses yet.')
+    const checkboxSelectAll = loggedPage.getByRole('checkbox', { name: 'Select all' })
     await statusPageTaskManager.menuStatuses.click()
-    while (true) {
+    for (let i = 0; i < 10; i++) {
       if (await noLabelsText.isVisible()) {
         break
       }
     await checkboxSelectAll.check()
-    await expect(page.locator('[data-test="bulk-actions-toolbar"]')).toBeVisible()
+    await expect(loggedPage.locator('[data-test="bulk-actions-toolbar"]')).toBeVisible()
 
     await statusPageTaskManager.buttonDel.click()
 
@@ -226,7 +201,7 @@ test('удаление всех лейблов с нескольких стра�
     }
   }
 
-    await expect(page.locator('[data-test="bulk-actions-toolbar"]')).not.toBeVisible()
+    await expect(loggedPage.locator('[data-test="bulk-actions-toolbar"]')).not.toBeVisible()
     await expect(noLabelsText).toBeVisible()
     await expect(statusPageTaskManager.buttonCreate).toBeVisible()
 })

@@ -20,30 +20,6 @@ export default class LabelsPage{
         name:'minor'
     }
 
-  this.labelsArr = [
-    {
-        id:'1',
-        name:'bug'
-    },
-    {
-        id:'2',
-        name:'feature'
-    },
-    {
-        id:'3',
-        name:'enhancement'
-    },
-    {
-        id:'4',
-        name:'task'
-    },
-     {
-        id:'5',
-        name:'critical'
-    }
-  ]
-
-
 }
 
 async createLabel(name ){
@@ -55,6 +31,21 @@ async completeСreationLabel(name){
     await this.buttonCreate.click()
     await this.createLabel(name)
     await this.buttonSave.click()
+}
+
+async openRow(name){
+  await this.menuLabels.click()
+    const tr = this.page.getByRole('row')
+                 .filter({ hasText: name })
+    await tr.click()
+
+}
+
+async selectRow(name){
+  const checkboxUser = this.page.getByRole('row')
+                 .filter({ hasText: name})
+                 .getByRole('checkbox')
+  await checkboxUser.click()
 }
 
 }
